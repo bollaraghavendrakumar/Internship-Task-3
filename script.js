@@ -1,46 +1,38 @@
-const images=[
-"images/image1.jpg",
-"images/image2.jpg",
-"images/image3.jpg",
-"images/image4.jpg"
-];
+async function getWeather() {
 
-let current=0;
+    const city = document.getElementById("city").value;
 
-const slide=document.getElementById("slide");
+    if (city === "") {
+        alert("Please enter a city name.");
+        return;
+    }
 
-document.getElementById("next").onclick=function(){
+    const apiKey = "d635a16bb6280001b8f49e66bb777607";
 
-current++;
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-if(current==images.length){
-current=0;
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("City not found!");
+        }
+
+        const data = await response.json();
+
+        document.getElementById("result").innerHTML = `
+            <h2>${data.name}, ${data.sys.country}</h2>
+            <p><strong>🌡 Temperature:</strong> ${data.main.temp} °C</p>
+            <p><strong>🤗 Feels Like:</strong> ${data.main.feels_like} °C</p>
+            <p><strong>☁ Weather:</strong> ${data.weather[0].description}</p>
+            <p><strong>💧 Humidity:</strong> ${data.main.humidity}%</p>
+            <p><strong>🌬 Wind Speed:</strong> ${data.wind.speed} m/s</p>
+        `;
+
+    } catch (error) {
+        document.getElementById("result").innerHTML =
+            `<p style="color:red;">${error.message}</p>`;
+    }
+
 }
-
-slide.src=images[current];
-
-}
-
-document.getElementById("prev").onclick=function(){
-
-current--;
-
-if(current<0){
-current=images.length-1;
-}
-
-slide.src=images[current];
-
-}
-
-setInterval(function(){
-
-current++;
-
-if(current==images.length){
-current=0;
-}
-
-slide.src=images[current];
-
-},3000);
